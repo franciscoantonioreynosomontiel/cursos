@@ -1,10 +1,10 @@
 /* ============================================================================
- * app.js · Interfaz de seguimiento de tareas
+ * app.js · Interfaz de seguimiento de funciones
  * ----------------------------------------------------------------------------
  * - Pinta la tabla, el carrusel de imágenes/video, las notas y el badge Update.
  * - Los archivos se suben a Cloudinary (js/cloudinary.js) y se piden con
  *   transformaciones para gastar el mínimo ancho de banda.
- * - Los datos (tareas, media, notas) se guardan vía Store (js/store.js).
+ * - Los datos (funciones, media, notas) se guardan vía Store (js/store.js).
  * ==========================================================================*/
 
 (() => {
@@ -19,7 +19,7 @@
     query: "",
     filter: "all",     // all | updated | pending | done
     sliderIndex: {},   // taskId -> índice visible del carrusel
-    editing: null,     // tarea en edición (null = nueva)
+    editing: null,     // función en edición (null = nueva)
     draftMedia: [],    // medios en el modal antes de guardar
   };
 
@@ -132,7 +132,7 @@
     if (btn.disabled) return;
     if (!confirm(
       "Se borrarán de Cloudinary los archivos que ya no están en la tabla.\n\n" +
-      "No afecta a ninguna tarea ni nota. ¿Continuar?",
+      "No afecta a ninguna función ni nota. ¿Continuar?",
     )) return;
 
     const original = btn.textContent;
@@ -198,19 +198,15 @@
     $("#empty-state").classList.toggle("hidden", tasks.length > 0);
     if (!tasks.length) {
       $("#empty-title").textContent = hasTasks
-        ? "Ninguna tarea coincide con el filtro"
-        : "Todavía no hay tareas";
+        ? "Ninguna función coincide con el filtro"
+        : "Todavía no hay funciones";
       $("#empty-text").textContent = hasTasks
         ? "Prueba con otro texto de búsqueda o cambia el filtro."
-        : "Crea tu primera tarea para empezar a llevar el control de tu sistema.";
+        : "Crea tu primera función para empezar a llevar el control de tu sistema.";
       tbody.innerHTML = "";
     } else {
       tbody.innerHTML = tasks.map(rowHtml).join("");
     }
-
-    $("#stat-total").textContent = state.tasks.length;
-    $("#stat-done").textContent = state.tasks.filter((t) => t.is_done || t.progress >= 100).length;
-    $("#stat-updated").textContent = state.tasks.filter((t) => t.is_updated).length;
   }
 
   function rowHtml(task) {
@@ -235,15 +231,12 @@
         </td>
 
         <td>
-          <div class="progress">
-            <div class="progress-bar"><i style="width:${progress}%"></i></div>
-            <span class="progress-value">${progress}%</span>
-          </div>
+          <span class="progress-value">${progress}%</span>
         </td>
 
         <td>${sliderHtml(task.id, media)}</td>
 
-        <td class="notes">${notesHtml(task.id, null, "Tarea")}</td>
+        <td class="notes">${notesHtml(task.id, null, "Función")}</td>
 
         <td class="cell-actions">
           <div class="stack">
@@ -268,8 +261,8 @@
       return `
         <div class="slider" data-slider="${esc(taskId)}">
           <div class="slider-frame">
-            <div class="slider-empty">Sin imágenes ni videos<br>
-              <span style="font-size:11px">Añádelos con "Editar"</span></div>
+            <div class="slider-empty">Sin vista<br>
+              <span style="font-size:11px">Añádela con "Editar"</span></div>
           </div>
         </div>`;
     }
@@ -329,7 +322,7 @@
               <div class="note-body">${esc(n.body)}</div>
               <div class="note-foot">
                 <span>
-                  <span class="note-tag">${esc(mediaId ? tag : "Tarea")}</span>
+                  <span class="note-tag">${esc(mediaId ? tag : "Función")}</span>
                   ${esc(fmtDate(n.created_at))}
                 </span>
                 <button class="tiny ghost" data-action="del-note" data-id="${esc(n.id)}">✕</button>
@@ -345,7 +338,7 @@
       </div>`;
   }
 
-  /* ------------------------------------------------------- modal tarea --- */
+  /* ----------------------------------------------------- modal función --- */
   function openTaskModal(taskId = null) {
     const task = taskId ? state.tasks.find((t) => t.id === taskId) : null;
     state.editing = task || null;
@@ -365,10 +358,11 @@
       state.draftMedia = [];
     }
 
-    $("#modal-title").textContent = task ? "Editar tarea" : "Nueva tarea";
+    $("#modal-title").textContent = task ? "Editar función" : "Nueva función";
     $("#field-title").value = task ? task.title : "";
     $("#field-desc").value = task ? task.description || "" : "";
     $("#field-progress").value = task ? task.progress : 0;
+    $("#field-progress-value").textContent = $("#field-progress").value + "%";
     $("#field-status").value = task ? task.status_label || "" : (cfg.DEFAULT_STATUS_LABEL || "Sin empezar");
     $("#btn-delete-task").classList.toggle("hidden", !task);
 
@@ -391,14 +385,17 @@
 
   function renderMediaEditor() {
     const box = $("#media-editor");
+    const hint = $(".dropzone-hint");
     const cloudOk = Cloudinary.configured();
+
+    if (hint) hint.classList.toggle("hidden", state.draftMedia.length > 0);
 
     if (!cloudOk) {
       box.innerHTML = `<div class="meta-line" style="margin-bottom:10px;color:var(--warn)">
         Cloudinary no está configurado en config.js: no se podrán subir archivos.</div>`;
+      return;
     } else if (!state.draftMedia.length) {
-      box.innerHTML = `<div class="meta-line" style="margin-bottom:10px">
-        Sin archivos. Usa "+ Subir archivo" para añadir imágenes o videos.</div>`;
+      box.innerHTML = "";
       return;
     }
 
@@ -543,7 +540,7 @@
 
       // Los archivos quitados también se borran de Cloudinary.
       await purgeCloudinary(removed);
-    }, editingId ? "Tarea actualizada" : "Tarea creada");
+    }, editingId ? "Función actualizada" : "Función creada");
 
     // Ya están guardados: no hay que borrarlos al cerrar.
     closeTaskModal({ discardUploads: false });
@@ -582,9 +579,9 @@
 
       if (action === "delete") {
         const task = state.tasks.find((t) => t.id === id);
-        if (!confirm(`¿Borrar la tarea "${task?.title || ""}"? Se borrarán también sus archivos en Cloudinary. Esta acción no se puede deshacer.`)) return;
+        if (!confirm(`¿Borrar la función "${task?.title || ""}"? Se borrarán también sus archivos en Cloudinary. Esta acción no se puede deshacer.`)) return;
         const media = mediaOf(id);
-        await guard(() => Store.deleteTask(id), "Tarea borrada");
+        await guard(() => Store.deleteTask(id), "Función borrada");
         await purgeCloudinary(media);
         return refresh();
       }
@@ -642,23 +639,35 @@
     $("#btn-delete-task").addEventListener("click", async () => {
       const id = state.editing?.id;
       if (!id) return;
-      if (!confirm("¿Borrar esta tarea y todo su contenido? También se borrarán sus archivos en Cloudinary.")) return;
+      if (!confirm("¿Borrar esta función y todo su contenido? También se borrarán sus archivos en Cloudinary.")) return;
       const media = mediaOf(id);
-      await guard(() => Store.deleteTask(id), "Tarea borrada");
+      await guard(() => Store.deleteTask(id), "Función borrada");
       closeTaskModal();
       await purgeCloudinary(media);
       await refresh();
     });
 
-    // Modal: subir archivos (input file + drag & drop)
+    // Modal: subir archivos (zona de drag & drop + clic para elegir)
     const fileInput = $("#media-file-input");
-    $("#btn-upload-media").addEventListener("click", () => fileInput.click());
+    const dropZone = $("#media-dropzone");
+
+    dropZone.addEventListener("click", (e) => {
+      // No abrir el selector si el clic es sobre un archivo ya listado.
+      if (e.target.closest("#media-editor")) return;
+      fileInput.click();
+    });
+    dropZone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
+
     fileInput.addEventListener("change", async (e) => {
       await uploadFiles(e.target.files);
       fileInput.value = "";
     });
 
-    const dropZone = $("#media-dropzone");
     ["dragenter", "dragover"].forEach((ev) =>
       dropZone.addEventListener(ev, (e) => {
         e.preventDefault();
@@ -670,6 +679,11 @@
         dropZone.classList.remove("dragover");
       }));
     dropZone.addEventListener("drop", (e) => uploadFiles(e.dataTransfer.files));
+
+    // Modal: barra de progreso -> refleja el número
+    $("#field-progress").addEventListener("input", (e) => {
+      $("#field-progress-value").textContent = e.target.value + "%";
+    });
 
     // Modal: editar caption / quitar
     $("#media-editor").addEventListener("input", (e) => {

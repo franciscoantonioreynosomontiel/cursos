@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Seguimiento de tareas · Mi sistema</title>
+  <title>Seguimiento de funciones · Mi sistema</title>
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
@@ -11,17 +11,10 @@
 
     <!-- ===================== CABECERA ===================== -->
     <header class="top">
-      <div class="brand">
-        <h1>Seguimiento de mi sistema</h1>
-        <p>
-          Tareas con descripción, porcentaje de completado, imágenes o videos
-          (en carrusel) y notas. Todo manual.
-        </p>
-      </div>
       <div class="header-actions">
         <button id="btn-refresh" class="ghost">↻ Refrescar</button>
-        <button id="btn-cleanup" class="ghost" title="Borra en Cloudinary los archivos que ya no usa ninguna tarea">🧹 Limpiar archivos</button>
-        <button id="btn-new" class="primary">+ Nueva tarea</button>
+        <button id="btn-cleanup" class="ghost" title="Borra en Cloudinary los archivos que ya no usa ninguna función">🧹 Limpiar archivos</button>
+        <button id="btn-new" class="primary">+ Nueva función</button>
       </div>
     </header>
 
@@ -29,22 +22,6 @@
     <div id="demo-banner" class="demo-banner hidden">
       <span>⚠️</span>
       <span id="demo-banner-text"></span>
-    </div>
-
-    <!-- ===================== RESUMEN ===================== -->
-    <div class="row" style="margin-bottom:18px">
-      <div class="card" style="padding:14px 16px">
-        <div class="meta-line">Tareas totales</div>
-        <div id="stat-total" style="font-size:22px;font-weight:600">0</div>
-      </div>
-      <div class="card" style="padding:14px 16px">
-        <div class="meta-line">Completadas</div>
-        <div id="stat-done" style="font-size:22px;font-weight:600">0</div>
-      </div>
-      <div class="card" style="padding:14px 16px">
-        <div class="meta-line">Con cambios (Update)</div>
-        <div id="stat-updated" style="font-size:22px;font-weight:600">0</div>
-      </div>
     </div>
 
     <!-- ===================== BARRA DE HERRAMIENTAS ===================== -->
@@ -63,9 +40,9 @@
       <table>
         <thead>
           <tr>
-            <th>Tarea</th>
+            <th>Función</th>
             <th>Progreso</th>
-            <th>Muestra (imagen / video)</th>
+            <th>Vista</th>
             <th>Notas</th>
             <th>Acciones</th>
           </tr>
@@ -74,20 +51,20 @@
       </table>
 
       <div id="empty-state" class="empty-state hidden">
-        <h3 id="empty-title">Todavía no hay tareas</h3>
+        <h3 id="empty-title">Todavía no hay funciones</h3>
         <p id="empty-text"></p>
-        <button class="primary" onclick="document.getElementById('btn-new').click()">+ Crear la primera tarea</button>
+        <button class="primary" onclick="document.getElementById('btn-new').click()">+ Crear la primera función</button>
       </div>
     </div>
   </div>
 
-  <!-- ===================== MODAL TAREA ===================== -->
+  <!-- ===================== MODAL FUNCIÓN ===================== -->
   <div id="modal-backdrop" class="modal-backdrop hidden">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <h2 id="modal-title">Nueva tarea</h2>
+      <h2 id="modal-title">Nueva función</h2>
 
       <label class="field">
-        <span>Título de la tarea</span>
+        <span>Título de la función</span>
         <input id="field-title" type="text" placeholder="Ej: Módulo de login">
       </label>
 
@@ -98,8 +75,11 @@
 
       <div class="row">
         <label class="field">
-          <span>Porcentaje de completado (0–100)</span>
-          <input id="field-progress" type="number" min="0" max="100" step="5" value="0">
+          <span>Porcentaje de completado</span>
+          <div class="range-field">
+            <input id="field-progress" type="range" min="0" max="100" step="5" value="0">
+            <output id="field-progress-value">0%</output>
+          </div>
         </label>
         <label class="field">
           <span>Etiqueta de estado</span>
@@ -108,21 +88,23 @@
       </div>
 
       <div class="field media-editor">
-        <span style="display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:8px">
-          Imágenes y videos (carrusel)
-        </span>
-        <div id="media-dropzone" class="dropzone">
-          <div id="media-editor"></div>
-          <div class="dropzone-actions">
-            <button id="btn-upload-media" class="ghost tiny" type="button">+ Subir archivo</button>
-            <span class="meta-line" style="margin:0">o arrastra aquí tus imágenes / videos</span>
+        <span class="field-label">Vista</span>
+        <div id="media-dropzone" class="dropzone" role="button" tabindex="0"
+             title="Arrastra tus archivos aquí o haz clic para elegirlos">
+          <div class="dropzone-hint">
+            <span class="dropzone-icon">⬆</span>
+            <span>
+              <strong>Arrastra y suelta</strong> tus imágenes o videos aquí<br>
+              <span class="meta-line" style="margin:0">o haz clic para elegirlos</span>
+            </span>
           </div>
+          <div id="media-editor"></div>
           <input id="media-file-input" type="file" accept="image/*,video/*" multiple hidden>
         </div>
       </div>
 
       <div class="modal-actions">
-        <button id="btn-delete-task" class="danger hidden" type="button">Borrar tarea</button>
+        <button id="btn-delete-task" class="danger hidden" type="button">Borrar función</button>
         <button id="btn-cancel" class="ghost" type="button">Cancelar</button>
         <button id="btn-save" class="primary" type="button">Guardar</button>
       </div>

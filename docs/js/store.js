@@ -134,7 +134,7 @@ const Store = (() => {
 
     const db = readLocal();
     const row = db.tasks.find((t) => t.id === id);
-    if (!row) throw new Error("Tarea no encontrada");
+    if (!row) throw new Error("Función no encontrada");
 
     const changed = ["title", "description", "progress", "status_label", "is_done"]
       .some((k) => k in payload && payload[k] !== row[k]);
@@ -146,7 +146,7 @@ const Store = (() => {
     return row;
   }
 
-  // Quita la etiqueta "Update" sin marcar la tarea como cambiada otra vez.
+  // Quita la etiqueta "Update" sin marcar la función como cambiada otra vez.
   async function markReviewed(id) {
     return updateTask(id, { is_updated: false });
   }
