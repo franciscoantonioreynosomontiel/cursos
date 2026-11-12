@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seguimiento de tareas · Mi sistema</title>
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- ===================== CABECERA ===================== -->
+    <header class="top">
+      <div class="brand">
+        <h1>Seguimiento de mi sistema</h1>
+        <p>
+          Tareas con descripción, porcentaje de completado, imágenes o videos
+          (en carrusel) y notas. Todo manual.
+        </p>
+      </div>
+      <div class="header-actions">
+        <button id="btn-refresh" class="ghost">↻ Refrescar</button>
+        <button id="btn-cleanup" class="ghost" title="Borra en Cloudinary los archivos que ya no usa ninguna tarea">🧹 Limpiar archivos</button>
+        <button id="btn-new" class="primary">+ Nueva tarea</button>
+      </div>
+    </header>
+
+    <!-- ===================== AVISO MODO DEMO ===================== -->
+    <div id="demo-banner" class="demo-banner hidden">
+      <span>⚠️</span>
+      <span id="demo-banner-text"></span>
+    </div>
+
+    <!-- ===================== RESUMEN ===================== -->
+    <div class="row" style="margin-bottom:18px">
+      <div class="card" style="padding:14px 16px">
+        <div class="meta-line">Tareas totales</div>
+        <div id="stat-total" style="font-size:22px;font-weight:600">0</div>
+      </div>
+      <div class="card" style="padding:14px 16px">
+        <div class="meta-line">Completadas</div>
+        <div id="stat-done" style="font-size:22px;font-weight:600">0</div>
+      </div>
+      <div class="card" style="padding:14px 16px">
+        <div class="meta-line">Con cambios (Update)</div>
+        <div id="stat-updated" style="font-size:22px;font-weight:600">0</div>
+      </div>
+    </div>
+
+    <!-- ===================== BARRA DE HERRAMIENTAS ===================== -->
+    <div class="toolbar">
+      <input id="search" class="search" type="text" placeholder="Buscar por título, descripción o estado…">
+      <select id="filter">
+        <option value="all">Todas</option>
+        <option value="updated">Solo con Update</option>
+        <option value="pending">Pendientes</option>
+        <option value="done">Completadas</option>
+      </select>
+    </div>
+
+    <!-- ===================== TABLA ===================== -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tarea</th>
+            <th>Progreso</th>
+            <th>Muestra (imagen / video)</th>
+            <th>Notas</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="task-rows"></tbody>
+      </table>
+
+      <div id="empty-state" class="empty-state hidden">
+        <h3 id="empty-title">Todavía no hay tareas</h3>
+        <p id="empty-text"></p>
+        <button class="primary" onclick="document.getElementById('btn-new').click()">+ Crear la primera tarea</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL TAREA ===================== -->
+  <div id="modal-backdrop" class="modal-backdrop hidden">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h2 id="modal-title">Nueva tarea</h2>
+
+      <label class="field">
+        <span>Título de la tarea</span>
+        <input id="field-title" type="text" placeholder="Ej: Módulo de login">
+      </label>
+
+      <label class="field">
+        <span>Descripción</span>
+        <textarea id="field-desc" placeholder="Qué hace, qué falta, decisiones tomadas…"></textarea>
+      </label>
+
+      <div class="row">
+        <label class="field">
+          <span>Porcentaje de completado (0–100)</span>
+          <input id="field-progress" type="number" min="0" max="100" step="5" value="0">
+        </label>
+        <label class="field">
+          <span>Etiqueta de estado</span>
+          <input id="field-status" type="text" placeholder="En progreso / Pendiente / Revisión">
+        </label>
+      </div>
+
+      <div class="field media-editor">
+        <span style="display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:8px">
+          Imágenes y videos (carrusel)
+        </span>
+        <div id="media-dropzone" class="dropzone">
+          <div id="media-editor"></div>
+          <div class="dropzone-actions">
+            <button id="btn-upload-media" class="ghost tiny" type="button">+ Subir archivo</button>
+            <span class="meta-line" style="margin:0">o arrastra aquí tus imágenes / videos</span>
+          </div>
+          <input id="media-file-input" type="file" accept="image/*,video/*" multiple hidden>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-delete-task" class="danger hidden" type="button">Borrar tarea</button>
+        <button id="btn-cancel" class="ghost" type="button">Cancelar</button>
+        <button id="btn-save" class="primary" type="button">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SCRIPTS ===================== -->
+  <!-- Librería de Supabase (CDN). Si no hay internet, la app usa modo demo. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="./config.js"></script>
+  <script src="./js/store.js"></script>
+  <script src="./js/cloudinary.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
