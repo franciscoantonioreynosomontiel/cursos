@@ -57,7 +57,6 @@ header.top {
   margin-bottom: 26px;
 }
 
-header.top .brand { flex: 1 1 320px; min-width: 260px; }
 
 header.top h1 {
   margin: 0;
@@ -72,14 +71,6 @@ header.top p {
 }
 
 .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
-/* ---------------------------------------------------------------- cards --- */
-.card {
-  background: linear-gradient(180deg, var(--panel), var(--bg-soft));
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
 
 /* --------------------------------------------------------------- botones -- */
 button, .btn {
@@ -120,12 +111,60 @@ button.tiny { padding: 5px 9px; font-size: 12.5px; }
 /* --------------------------------------------------------------- inputs --- */
 label.field { display: block; margin-bottom: 14px; }
 
-label.field > span {
+label.field > span,
+.field-label {
   display: block;
   font-size: 12.5px;
   color: var(--text-dim);
   margin-bottom: 6px;
   letter-spacing: .02em;
+}
+
+/* ----------------------------------------------------------- range/prog -- */
+.range-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 8px;
+  background: #12151d;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--accent), var(--update));
+  border: 2px solid #0b0f1c;
+  box-shadow: var(--shadow);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #0b0f1c;
+}
+
+.range-field output {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: var(--text);
+  min-width: 42px;
+  text-align: right;
+  font-weight: 600;
 }
 
 input[type="text"],
@@ -269,37 +308,11 @@ tbody tr.is-done .task-title { text-decoration: line-through; color: var(--text-
 }
 
 /* ----------------------------------------------------------- progreso ---- */
-.progress {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 170px;
-}
-
-.progress-bar {
-  flex: 1;
-  height: 8px;
-  background: #12151d;
-  border-radius: 999px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-}
-
-.progress-bar > i {
-  display: block;
-  height: 100%;
-  width: 0;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent), var(--update));
-  transition: width .35s ease;
-}
-
 .progress-value {
   font-variant-numeric: tabular-nums;
-  font-size: 12.5px;
-  color: var(--text-dim);
-  min-width: 38px;
-  text-align: right;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
 }
 
 /* ------------------------------------------------------------- slider ---- */
@@ -519,7 +532,16 @@ tbody tr.is-done .task-title { text-decoration: line-through; color: var(--text-
   border: 1px dashed var(--border);
   border-radius: var(--radius-sm);
   padding: 12px;
+  cursor: pointer;
   transition: border-color .15s, background .15s;
+}
+
+.dropzone:hover { border-color: var(--text-faint); }
+
+.dropzone:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--ring);
 }
 
 .dropzone.dragover {
@@ -527,13 +549,28 @@ tbody tr.is-done .task-title { text-decoration: line-through; color: var(--text-
   background: rgba(108, 140, 255, .06);
 }
 
-.dropzone-actions {
+.dropzone-hint {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 10px;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 18px 12px;
+  color: var(--text-dim);
+  font-size: 13px;
 }
+
+.dropzone-hint strong { color: var(--text); }
+
+.dropzone-icon {
+  font-size: 22px;
+  line-height: 1;
+  color: var(--accent);
+}
+
+#media-editor:not(:empty) { margin-bottom: 0; }
+.dropzone-hint + #media-editor:not(:empty) { margin-top: 4px; }
+
 
 /* --------------------------------------------------------------- avisos --- */
 .toast {
